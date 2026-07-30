@@ -3,19 +3,19 @@ import classNames from "classnames";
 import "./style.scss";
 
 interface ToggleProps {
-  options: {value: string, title?: string, icon?: ReactNode}[]
+  options: { value: string, title?: string, icon?: ReactNode }[]
   value: string
   onChange: (val: string) => void
   label?: string
+  size?: "medium" | "large"
 }
 
-const Toggle: FC<ToggleProps> = ({ options, value, label, onChange }) => {
+const Toggle: FC<ToggleProps> = ({ options, value, label, size = "medium", onChange }) => {
 
   const activeRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({
     width: "0px",
     left: "0px",
-    borderRadius: "0px"
   });
 
   const createHandlerChange = (value: string) => () => {
@@ -27,7 +27,6 @@ const Toggle: FC<ToggleProps> = ({ options, value, label, onChange }) => {
       setPosition({
         width: "0px",
         left: "0px",
-        borderRadius: "0px"
       });
       return;
     }
@@ -36,13 +35,9 @@ const Toggle: FC<ToggleProps> = ({ options, value, label, onChange }) => {
 
     let width = widthRect;
     let left = index * width;
-    let borderRadius = "0";
-    if (index === 0) borderRadius = "16px 0 0 16px";
 
     if (index === options.length - 1) {
-      borderRadius = "10px";
       left -= 1;
-      borderRadius = "0 16px 16px 0";
     }
 
     if (index !== 0 && (index !== options.length - 1)) {
@@ -51,11 +46,16 @@ const Toggle: FC<ToggleProps> = ({ options, value, label, onChange }) => {
     }
 
 
-    setPosition({ width: `${width}px`, left: `${left}px`, borderRadius });
+    setPosition({ width: `${width}px`, left: `${left}px` });
   }, [activeRef, value, options]);
 
   return (
-    <div className="vm-toggles">
+    <div
+      className={classNames({
+        "vm-toggles": true,
+        [`vm-toggles_${size}`]: size,
+      })}
+    >
       {label && (
         <label className="vm-toggles__label">
           {label}
@@ -65,10 +65,10 @@ const Toggle: FC<ToggleProps> = ({ options, value, label, onChange }) => {
         className="vm-toggles-group"
         style={{ gridTemplateColumns: `repeat(${options.length}, 1fr)` }}
       >
-        {position.borderRadius && <div
+        <div
           className="vm-toggles-group__highlight"
           style={position}
-        />}
+        />
         {options.map((option, i) => (
           <div
             className={classNames({
